@@ -91,6 +91,9 @@ htmlcov
 # Things specific to this project #
 ###################################
 *.pdf
+*.json
+*.jpg
+temp*/*
 
 /.anaconda
 /.envs
