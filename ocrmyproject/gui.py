@@ -1,11 +1,15 @@
 """
 Minimal GUI for ocrmyproject using tkinter.
 """
-import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+# Standard library imports
 import threading
 from pathlib import Path
 
+# GUI imports
+import tkinter as tk
+from tkinter import ttk, filedialog, messagebox
+
+# Local imports
 from ocrmyproject.api import ocr_directory, merge_pdfs_with_toc
 
 
@@ -114,13 +118,18 @@ class OCRMyProjectGUI:
             if not input_path or not output_path:
                 raise ValueError("Input and output paths are required")
             
+            # Define GUI progress callback function
+            def gui_progress_callback(processed_files, total_files, processed_pages, total_pages):
+                # Update progress bar in the GUI thread
+                self.root.after(0, lambda: self.update_progress_gui(processed_files, total_files, processed_pages, total_pages))
+            
             if self.operation_type.get() == "ocr":
-                ocr_directory(input_path, output_path, language=lang, force_ocr=force)
+                ocr_directory(input_path, output_path, language=lang, force_ocr=force, progress_callback=gui_progress_callback)
             elif self.operation_type.get() == "merge":
                 merge_pdfs_with_toc(input_path, output_path)
             elif self.operation_type.get() == "all":
                 temp_dir = "temp_ocr_output"
-                ocr_directory(input_path, temp_dir, language=lang, force_ocr=force)
+                ocr_directory(input_path, temp_dir, language=lang, force_ocr=force, progress_callback=gui_progress_callback)
                 merge_pdfs_with_toc(temp_dir, output_path)
             
             self.root.after(0, lambda: self.status_label.config(text="Processing completed successfully!"))
@@ -134,8 +143,29 @@ class OCRMyProjectGUI:
         finally:
             self.root.after(0, lambda: self.progress.stop())
 
+    def update_progress_gui(self, processed_files, total_files, processed_pages, total_pages):
+        """Update the GUI with progress information."""
+        if total_files > 0:
+            # Calculate percentages
+            percent_files = (processed_files / total_files) * 100 if total_files > 0 else 0
+            percent_pages = (processed_pages / total_pages) * 100 if total_pages > 0 else 0
+            
+            # Update the progress bar (simulating determinate mode by stopping the indeterminate animation)
+            self.progress['value'] = percent_files
+            self.progress.stop()  # Stop the indeterminate animation
+            
+            # Update status label with detailed progress
+            status_text = f"Processing... Files: {processed_files}/{total_files} ({percent_files:.1f}%), Pages: {processed_pages}/{total_pages} ({percent_pages:.1f}%)"
+            self.status_label.config(text=status_text)
+        else:
+            # If we don't have total counts yet, just show basic processing message
+            self.status_label.config(text="Processing...")
+
 
 def main():
+    # Standard library imports for main function
+    import tkinter as tk
+
     root = tk.Tk()
     app = OCRMyProjectGUI(root)
     root.mainloop()

@@ -1,22 +1,63 @@
 """
 Command line interface for ocrmyproject.
 """
+# Standard library imports
 import argparse
 import logging
-import sys
 import os
+import sys
 from pathlib import Path
 
+# Local imports
 from ocrmyproject.api import ocr_directory, merge_pdfs_with_toc
 
 
 def main():
     """Main CLI entry point."""
-    # Set up logging
-    logging.basicConfig(
-        level=logging.INFO, 
-        format='%(asctime)s - %(levelname)s - %(message)s'
+    # Standard library imports
+    import argparse
+    import glob
+    import logging
+    import os
+    import shutil
+    import sys
+    from pathlib import Path
+
+    # Third-party imports
+    import ocrmypdf
+
+    # Set up colored logging
+    class ColoredFormatter(logging.Formatter):
+        """Custom formatter to add colors to log levels."""
+        # Define color codes
+        COLORS = {
+            'DEBUG': '\033[36m',    # Cyan
+            'INFO': '\033[32m',     # Green
+            'WARNING': '\033[33m',  # Yellow
+            'ERROR': '\033[31m',    # Red
+            'CRITICAL': '\033[35m', # Magenta
+        }
+        RESET = '\033[0m'  # Reset to default color
+
+        def format(self, record):
+            log_color = self.COLORS.get(record.levelname, self.RESET)
+            record.levelname = f"{log_color}{record.levelname}{self.RESET}"
+            return super().format(record)
+
+    # Create colored handler
+    colored_handler = logging.StreamHandler(sys.stdout)
+    colored_formatter = ColoredFormatter(
+        fmt='%(asctime)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
     )
+    colored_handler.setFormatter(colored_formatter)
+    
+    # Configure logging
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    # Clear any existing handlers
+    logger.handlers = []
+    logger.addHandler(colored_handler)
     
     parser = argparse.ArgumentParser(
         description="Complete OCR and PDF merging toolkit",
@@ -84,8 +125,46 @@ Usage examples:
             input_basename_safe = input_basename.replace(" ", "_")
             output_file = f"{input_basename_safe}_merged.pdf"
         temp_ocr_dir = "temp_ocr_output"  # Temporary directory for OCR processing
+        
+        # Check if temporary directory already exists with PDFs
+        if os.path.exists(temp_ocr_dir):
+            import glob
+            existing_pdfs = glob.glob(os.path.join(temp_ocr_dir, "**", "*.pdf"), recursive=True)
+            if existing_pdfs:
+                print(f"\nWarning: {len(existing_pdfs)} PDF files already exist in the temporary OCR directory '{temp_ocr_dir}'.")
+                response = input("Do you want to reuse existing OCR results? (Y/n): ").strip().lower()
+                if response in ['n', 'no']:
+                    import shutil
+                    print(f"Removing existing temporary directory: {temp_ocr_dir}")
+                    shutil.rmtree(temp_ocr_dir)
+                    os.makedirs(temp_ocr_dir, exist_ok=True)
+                    logging.info(f"Temporary directory '{temp_ocr_dir}' removed and recreated.")
+                else:
+                    logging.info(f"Reusing existing OCR results from '{temp_ocr_dir}'.")
+            else:
+                logging.info(f"Temporary directory '{temp_ocr_dir}' exists but is empty or contains no PDFs.")
+        else:
+            logging.info(f"Creating new temporary directory: {temp_ocr_dir}")
+        
+        # Progress callback function for CLI
+        def cli_progress_callback(processed_files, total_files, processed_pages, total_pages):
+            # Create progress bar
+            bar_length = 50
+            percent_files = (processed_files / total_files) * 100 if total_files > 0 else 0
+            percent_pages = (processed_pages / total_pages) * 100 if total_pages > 0 else 0
+            
+            filled_files = int(bar_length * processed_files // total_files) if total_files > 0 else 0
+            bar_files = '█' * filled_files + '-' * (bar_length - filled_files)
+            
+            sys.stdout.write(f'\rFiles: |{bar_files}| {percent_files:.2f}% ({processed_files}/{total_files}) - Pages: {processed_pages}/{total_pages} ({percent_pages:.2f}%)')
+            sys.stdout.flush()
+        
         logging.info(f"Complete processing - Input directory: {args.input}, Output file: {output_file}, Language: {args.language}")
-        ocr_directory(args.input, temp_ocr_dir, language=args.language, force_ocr=args.force_ocr)
+        ocr_directory(args.input, temp_ocr_dir, language=args.language, force_ocr=args.force_ocr, progress_callback=cli_progress_callback)
+        
+        # Clear the progress bar line
+        print()  # Move to next line after progress bar
+        
         logging.info("OCR processing completed, starting merging...")
         merge_pdfs_with_toc(temp_ocr_dir, output_file)
         logging.info("Complete processing completed.")

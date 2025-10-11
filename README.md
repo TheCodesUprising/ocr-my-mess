@@ -16,39 +16,112 @@ A complete OCR and PDF management toolkit that processes documents with OCR and 
 
 ## Installation
 
-### Using pip:
-```bash
-# Install Python dependencies
-pip install -r requirements.txt
+### Option 1: Using System Python with System Tesseract (recommended)
 
-# Install the package
-pip install -e .
-```
+1. **Install Tesseract OCR using system packages:**
 
-### Using conda (recommended for Tesseract):
-```bash
-# Create conda environment with Tesseract and other system dependencies
-conda env create -f environment.yml
+   **Ubuntu/Debian:**
+   ```bash
+   sudo apt update
+   sudo apt install tesseract-ocr tesseract-ocr-fra libtesseract-dev
+   ```
 
-# Activate the environment
-conda activate ocrmyproject
+   **CentOS/RHEL/Fedora:**
+   ```bash
+   # For CentOS/RHEL
+   sudo yum install tesseract tesseract-devel
+   
+   # For Fedora
+   sudo dnf install tesseract tesseract-devel
+   
+   # Install French language pack
+   sudo dnf install tesseract-langpack-fra  # For Fedora
+   # or
+   sudo yum install tesseract-langpack-fra  # For CentOS/RHEL
+   ```
 
-# Install the package
-pip install -e .
-```
+   **macOS:**
+   ```bash
+   # Install Homebrew if not already installed
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   
+   # Install Tesseract
+   brew install tesseract
+   
+   # Install language packs
+   brew install tesseract-lang
+   # Or specifically for French
+   brew install tesseract-lang fra
+   ```
+
+   **Windows:**
+   - Download and install Tesseract from: https://github.com/UB-Mannheim/tesseract/wiki
+   - Add the installation directory (usually `C:\Program Files\Tesseract-OCR`) to your PATH
+   - Install language packs as needed
+
+2. **Install Python dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   pip install -e .
+   ```
+
+### Option 2: Using Miniconda with Environment File (recommended)
+
+1. **Install Miniconda:**
+
+   **Linux:**
+   ```bash
+   # Download the latest Miniconda installer
+   wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+   
+   # Run the installer
+   bash Miniconda3-latest-Linux-x86_64.sh
+   
+   # Follow the prompts and restart your terminal or source the bashrc
+   source ~/.bashrc
+   ```
+
+   **macOS:**
+   ```bash
+   # Download the latest Miniconda installer
+   curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
+   
+   # Run the installer
+   bash Miniconda3-latest-MacOSX-x86_64.sh
+   
+   # Follow the prompts and restart your terminal or source the bash_profile
+   source ~/.bash_profile
+   ```
+
+   **Windows:**
+   - Download from: https://docs.conda.io/en/latest/miniconda.html
+   - Run the installer with default options
+   - Use Anaconda Prompt for command line operations
+
+2. **Create and activate the conda environment:**
+   ```bash
+   # Create environment using the provided environment file
+   conda env create -f environment.yml
+   
+   # Activate the environment
+   conda activate ocrmyproject
+   
+   # Install the package in development mode
+   pip install -e .
+   ```
 
 ### From source:
 ```bash
 git clone https://github.com/yourusername/ocrmyproject.git
 cd ocrmyproject
 
-# Using conda (recommended)
-conda env create -f environment.yml
-conda activate ocrmyproject
+# Using Option 1: System packages
+pip install -r requirements.txt
 pip install -e .
 
-# Or using pip only
-pip install -r requirements.txt
+# Using Option 2: Conda environment (recommended)
+conda env create -f environment.yml
+conda activate ocrmyproject
 pip install -e .
 ```
 
@@ -60,13 +133,77 @@ The package provides both command-line interface and graphical user interface.
 
 The package provides three main commands: `ocr`, `merge`, and `all`.
 
-#### OCR Processing
+#### Launching the CLI
 
+To launch the command-line interface:
+
+```bash
+ocrmyproject --help
+```
+
+#### Available Commands
+
+**OCR Processing**
 Process files with OCR to create searchable PDFs:
 
 ```bash
 ocrmyproject ocr -i /path/to/input/directory -o /path/to/output/directory
 ```
+
+**PDF Merging**
+Merge multiple PDFs with a table of contents based on directory structure:
+
+```bash
+ocrmyproject merge -i /path/to/pdfs/directory -o merged_output.pdf
+```
+
+**Complete Processing (OCR + Merge)**
+Perform OCR on all files and then merge them into a single PDF with TOC:
+
+```bash
+ocrmyproject all -i /path/to/documents -o all_processed_output.pdf
+```
+
+#### CLI Command Options
+
+##### OCR Command:
+- `-i, --input`: Input directory containing files to process
+- `-o, --output`: Output directory for results (default: ocr_results)
+- `--force-ocr`: Force OCR on all pages (better results, slower processing)
+- `-l, --language`: OCR language (default: fra for French)
+
+##### Merge Command:
+- `-i, --input`: Input directory containing PDFs to merge
+- `-o, --output`: Output PDF file path (default: merged_output.pdf)
+
+##### All Command:
+- `-i, --input`: Input directory containing documents to process
+- `-o, --output`: Output PDF file path (default: all_processed_output.pdf)
+- `--force-ocr`: Force OCR on all pages (better results, slower processing)
+- `-l, --language`: OCR language (default: fra for French)
+
+### Graphical User Interface
+
+#### Launching the GUI
+
+To launch the graphical user interface:
+
+```bash
+python -m ocrmyproject.gui
+```
+
+Or from the project root directory:
+
+```bash
+python -c "from ocrmyproject import gui; gui.main()"
+```
+
+The GUI provides a simple interface with:
+- Input and output directory selection
+- Operation type (OCR, merge, or complete processing)
+- Language selection
+- Force OCR option
+- Progress tracking with file and page counts
 
 With force OCR for better results:
 ```bash
@@ -81,6 +218,8 @@ ocrmyproject ocr --language eng -i /path/to/input/directory -o /path/to/output/d
 ```
 
 Supported languages can be any language supported by Tesseract OCR (e.g., `fra` for French, `eng` for English, `deu` for German, etc.)
+
+The test files in the `tmp_tests` directory contain English text for testing purposes.
 
 ### PDF Merging
 
