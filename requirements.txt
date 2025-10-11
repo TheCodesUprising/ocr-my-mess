@@ -1,0 +1,8 @@
+# OCR and PDF processing - main dependency
+ocrmypdf>=13.0.0
+
+# PDF manipulation (used for merging and TOC creation)
+PyMuPDF>=1.20.0  # fitz module
+
+# Image processing
+Pillow>=8.0.0
