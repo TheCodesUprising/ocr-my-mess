@@ -45,33 +45,44 @@ pip install -e .
 
 ## Usage
 
+The application can be run in two modes:
+
+- **Command-Line Interface (CLI)**: If you provide any arguments.
+- **Graphical User Interface (GUI)**: If you run it without any arguments.
+
 ### Command-Line Interface (CLI)
 
-The CLI provides two main sub-commands: `convert` and `merge`.
+The CLI provides several commands, including `run`, `convert` and `merge`.
 
 ```bash
 # General help
-ocr-my-mess-cli --help
+ocr-my-mess --help
 
-# 1. Convert and OCR all documents in a folder
-ocr-my-mess-cli convert --input-dir /path/to/docs --output-dir /path/to/output --lang en+fr
+# Get version
+ocr-my-mess -v
 
-# 2. Merge all PDFs in the output folder into a single file
-ocr-my-mess-cli merge --input-dir /path/to/output --output-file /path/to/final.pdf
+# Run the full pipeline on a directory
+ocr-my-mess run --input /path/to/docs --output /path/to/final.pdf --lang en+fr
+
+# Just convert and OCR all documents in a folder
+ocr-my-mess convert --input-dir /path/to/docs --output-dir /path/to/output
+
+# Just merge all PDFs in a folder into a single file
+ocr-my-mess merge --input-dir /path/to/output --output-file /path/to/final.pdf
 ```
 
 ### Graphical User Interface (GUI)
 
-For a more visual approach, you can launch the GUI.
+For a more visual approach, you can launch the GUI by running the command without any arguments.
 
 ```bash
-ocr-my-mess-gui
+ocr-my-mess
 ```
 
 This will open a window allowing you to:
 - Select input and output directories.
 - Choose OCR languages.
-- Run the "Convert + OCR" and "Merge" processes.
+- Run the full pipeline.
 - See live logs and progress.
 
 ## Development
@@ -86,14 +97,13 @@ pytest
 
 ### Building Executables
 
-This project uses PyInstaller to create standalone executables. Build scripts are provided in the `scripts/` directory.
+This project uses PyInstaller to create a standalone executable. A build script is provided in the `scripts/` directory.
 
 ```bash
-# Build the CLI executable
-./scripts/build_cli.sh
-
-# Build the GUI executable
-./scripts/build_gui.sh
+# Build the executable
+python scripts/build.py
 ```
 
-The executables will be located in the `dist/` directory.
+The executable will be located in the `dist/` directory.
+
+**Note**: When running the GUI from the executable on Windows or macOS, a console window will appear alongside the main application window. This is expected behavior.

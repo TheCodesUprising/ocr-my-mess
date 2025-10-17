@@ -9,6 +9,8 @@ import logging
 import shutil
 import sys
 from pathlib import Path
+from importlib import metadata
+from typing import Optional
 
 import typer
 from rich.console import Console
@@ -20,14 +22,37 @@ sys.path.insert(0, str(project_root))
 
 from pdf_pipeline import convert as convert_module, merge as merge_module, utils  # noqa: E402
 
+def version_callback(value: bool):
+    if value:
+        try:
+            version = metadata.version("ocr-my-mess")
+        except metadata.PackageNotFoundError:
+            version = "unknown"
+        print(f"ocr-my-mess version: {version}")
+        raise typer.Exit()
+
 app = typer.Typer(
-    name="ocr-my-mess-cli",
+    name="ocr-my-mess",
     help="A tool to convert, OCR, and merge documents into a single searchable PDF.",
     add_completion=False,
     context_settings={"help_option_names": ["-h", "--help"]},
 )
 
-console = Console()
+@app.callback()
+def main_callback(
+    version: Optional[bool] = typer.Option(
+        None,
+        "--version",
+        "-V",
+        callback=version_callback,
+        is_eager=True,
+        help="Show the application's version and exit.",
+    )
+):
+    """
+    OCR My Mess: A tool to convert, OCR, and merge documents.
+    """
+    pass
 
 
 @app.command()
@@ -63,7 +88,6 @@ def run(
     force_ocr: Annotated[
         bool,
         typer.Option("--force-ocr", help="Force OCR even if text is already present."),
-    ] = False,
     verbose: Annotated[
         int,
         typer.Option(
@@ -188,10 +212,6 @@ def convert(
         bool,
         typer.Option("--force-ocr", help="Force OCR even if text is already present."),
     ] = False,
-    convert_office: Annotated[
-        bool,
-        typer.Option("--convert-office/--no-convert-office", help="Enable/disable office document conversion."),
-    ] = True,
     verbose: Annotated[
         int,
         typer.Option(

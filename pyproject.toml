@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ocr-my-mess"
-version = "0.1.0"
+version = "0.1.2"
 description = "A PDF pipeline to convert, OCR, and merge documents."
 readme = "README.md"
 requires-python = ">=3.7"
@@ -25,8 +25,7 @@ dependencies = [
 "Bug Tracker" = "https://github.com/example/ocr-my-mess/issues"
 
 [project.scripts]
-ocr-my-mess-cli = "pdf_pipeline.cli:main"
-ocr-my-mess-gui = "pdf_pipeline.gui:main"
+ocr-my-mess = "pdf_pipeline.main:main"
 
 [tool.setuptools]
 packages = ["pdf_pipeline"]

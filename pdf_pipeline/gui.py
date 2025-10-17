@@ -20,6 +20,7 @@ import webbrowser
 from pathlib import Path
 from tkinter import filedialog, messagebox, scrolledtext
 from typing import Optional
+from importlib import metadata
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import (BOTH, DANGER, FLAT, LEFT, SECONDARY, SUCCESS, X)
@@ -47,7 +48,11 @@ class App(ttk.Window):
 
     def __init__(self):
         super().__init__(themename="litera")
-        self.title("OCR My Mess")
+        try:
+            version = metadata.version("ocr-my-mess")
+        except metadata.PackageNotFoundError:
+            version = "unknown"
+        self.title(f"OCR My Mess v{version}")
         self.geometry("800x750")
 
         self.thread = None
