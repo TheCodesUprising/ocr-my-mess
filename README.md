@@ -1,396 +1,99 @@
-# OCR My Project
+# ocr-my-mess
 
-A complete OCR and PDF management toolkit that processes documents with OCR and merges them with a hierarchical table of contents.
+A complete and modular Python pipeline to convert, OCR, and merge all your documents into a single, searchable PDF.
 
 ## Features
 
-- **OCR Processing**: Convert images and scanned PDFs to searchable PDFs using ocrmypdf
-- **Multi-format Support**: Handles PDF, PNG, JPG, JPEG, TIFF, and TIF files
-- **Directory Processing**: Recursively processes entire directory structures
-- **ZIP Archive Extraction**: Automatically extracts ZIP archives and processes contained files
-- **Progress Tracking**: Resumes interrupted processing using JSON state files
-- **PDF Merging**: Combines multiple PDFs with a hierarchical table of contents based on directory structure
-- **Threaded Processing**: Uses multiple threads for faster processing
-- **Force OCR Option**: Option to force OCR on all pages for better results
-- **Multi-language Support**: Support for different OCR languages (default: French)
+- **Recursive Conversion**: Traverses a directory to find all supported files (images, office documents, archives, existing PDFs).
+- **OCR Processing**: Applies OCR to all documents using `ocrmypdf` to make them text-searchable.
+- **Hierarchical Merging**: Merges all generated PDFs into a single file with a table of contents that mirrors the original folder structure.
+- **Dual Interfaces**: Usable as both a powerful Command-Line Interface (`ocr-my-mess-cli`) and a simple Graphical User Interface (`ocr-my-mess-gui`).
+- **Cross-Platform**: Packaged with PyInstaller to run on Windows, macOS, and Linux.
 
 ## Installation
 
-### Option 1: Using System Python with System Tesseract (recommended)
+### Using Conda (Recommended)
 
-1. **Install Tesseract OCR using system packages:**
+This is the easiest way to get started, as it handles all dependencies, including Python itself.
 
-   **Ubuntu/Debian:**
-   ```bash
-   sudo apt update
-   sudo apt install tesseract-ocr tesseract-ocr-fra libtesseract-dev
-   ```
-
-   **CentOS/RHEL/Fedora:**
-   ```bash
-   # For CentOS/RHEL
-   sudo yum install tesseract tesseract-devel
-   
-   # For Fedora
-   sudo dnf install tesseract tesseract-devel
-   
-   # Install French language pack
-   sudo dnf install tesseract-langpack-fra  # For Fedora
-   # or
-   sudo yum install tesseract-langpack-fra  # For CentOS/RHEL
-   ```
-
-   **macOS:**
-   ```bash
-   # Install Homebrew if not already installed
-   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-   
-   # Install Tesseract
-   brew install tesseract
-   
-   # Install language packs
-   brew install tesseract-lang
-   # Or specifically for French
-   brew install tesseract-lang fra
-   ```
-
-   **Windows:**
-   - Download and install Tesseract from: https://github.com/UB-Mannheim/tesseract/wiki
-   - Add the installation directory (usually `C:\Program Files\Tesseract-OCR`) to your PATH
-   - Install language packs as needed
-
-2. **Install Python dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   pip install -e .
-   ```
-
-### Option 2: Using Miniconda with Environment File (recommended)
-
-1. **Install Miniconda:**
-
-   **Linux:**
-   ```bash
-   # Download the latest Miniconda installer
-   wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-   
-   # Run the installer
-   bash Miniconda3-latest-Linux-x86_64.sh
-   
-   # Follow the prompts and restart your terminal or source the bashrc
-   source ~/.bashrc
-   ```
-
-   **macOS:**
-   ```bash
-   # Download the latest Miniconda installer
-   curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
-   
-   # Run the installer
-   bash Miniconda3-latest-MacOSX-x86_64.sh
-   
-   # Follow the prompts and restart your terminal or source the bash_profile
-   source ~/.bash_profile
-   ```
-
-   **Windows:**
-   - Download from: https://docs.conda.io/en/latest/miniconda.html
-   - Run the installer with default options
-   - Use Anaconda Prompt for command line operations
-
-2. **Create and activate the conda environment:**
-   ```bash
-   # Create environment using the provided environment file
-   conda env create -f environment.yml
-   
-   # Activate the environment
-   conda activate ocrmyproject
-   
-   # Install the package in development mode
-   pip install -e .
-   ```
-
-### From source:
 ```bash
-git clone https://github.com/yourusername/ocrmyproject.git
-cd ocrmyproject
-
-# Using Option 1: System packages
-pip install -r requirements.txt
-pip install -e .
-
-# Using Option 2: Conda environment (recommended)
+# 1. Create the conda environment
 conda env create -f environment.yml
-conda activate ocrmyproject
+
+# 2. Activate the environment
+conda activate ocr-my-mess
+
+# 3. Install the project in editable mode
 pip install -e .
 ```
+
+### Using Pip
+
+```bash
+# 1. Create and activate a virtual environment
+python -m venv .venv
+source .venv/bin/activate
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Install the project in editable mode
+pip install -e .
+```
+
+**Note**: For office document conversion, you must have `LibreOffice` installed and available in your system's PATH.
 
 ## Usage
 
-The package provides both command-line interface and graphical user interface.
+### Command-Line Interface (CLI)
 
-### Command-Line Interface
-
-The package provides three main commands: `ocr`, `merge`, and `all`.
-
-#### Launching the CLI
-
-To launch the command-line interface:
+The CLI provides two main sub-commands: `convert` and `merge`.
 
 ```bash
-ocrmyproject --help
+# General help
+ocr-my-mess-cli --help
+
+# 1. Convert and OCR all documents in a folder
+ocr-my-mess-cli convert --input-dir /path/to/docs --output-dir /path/to/output --lang en+fr
+
+# 2. Merge all PDFs in the output folder into a single file
+ocr-my-mess-cli merge --input-dir /path/to/output --output-file /path/to/final.pdf
 ```
 
-#### Available Commands
+### Graphical User Interface (GUI)
 
-**OCR Processing**
-Process files with OCR to create searchable PDFs:
+For a more visual approach, you can launch the GUI.
 
 ```bash
-ocrmyproject ocr -i /path/to/input/directory -o /path/to/output/directory
+ocr-my-mess-gui
 ```
 
-**PDF Merging**
-Merge multiple PDFs with a table of contents based on directory structure:
-
-```bash
-ocrmyproject merge -i /path/to/pdfs/directory -o merged_output.pdf
-```
-
-**Complete Processing (OCR + Merge)**
-Perform OCR on all files and then merge them into a single PDF with TOC:
-
-```bash
-ocrmyproject all -i /path/to/documents -o all_processed_output.pdf
-```
-
-#### CLI Command Options
-
-##### OCR Command:
-- `-i, --input`: Input directory containing files to process
-- `-o, --output`: Output directory for results (default: ocr_results)
-- `--force-ocr`: Force OCR on all pages (better results, slower processing)
-- `-l, --language`: OCR language (default: fra for French)
-
-##### Merge Command:
-- `-i, --input`: Input directory containing PDFs to merge
-- `-o, --output`: Output PDF file path (default: merged_output.pdf)
-
-##### All Command:
-- `-i, --input`: Input directory containing documents to process
-- `-o, --output`: Output PDF file path (default: all_processed_output.pdf)
-- `--force-ocr`: Force OCR on all pages (better results, slower processing)
-- `-l, --language`: OCR language (default: fra for French)
-
-### Graphical User Interface
-
-#### Launching the GUI
-
-To launch the graphical user interface:
-
-```bash
-python -m ocrmyproject.gui
-```
-
-Or from the project root directory:
-
-```bash
-python -c "from ocrmyproject import gui; gui.main()"
-```
-
-The GUI provides a simple interface with:
-- Input and output directory selection
-- Operation type (OCR, merge, or complete processing)
-- Language selection
-- Force OCR option
-- Progress tracking with file and page counts
-
-With force OCR for better results:
-```bash
-ocrmyproject ocr --force-ocr -i /path/to/input/directory -o /path/to/output/directory
-```
-
-### Multi-language Support
-
-Specify the OCR language (default is French):
-```bash
-ocrmyproject ocr --language eng -i /path/to/input/directory -o /path/to/output/directory
-```
-
-Supported languages can be any language supported by Tesseract OCR (e.g., `fra` for French, `eng` for English, `deu` for German, etc.)
-
-The test files in the `tmp_tests` directory contain English text for testing purposes.
-
-### PDF Merging
-
-Merge multiple PDFs with a table of contents based on directory structure:
-
-```bash
-ocrmyproject merge -i /path/to/pdfs/directory -o merged_output.pdf
-```
-
-### Complete Processing (OCR + Merge)
-
-Perform OCR on all files and then merge them into a single PDF with TOC:
-
-```bash
-ocrmyproject all -i /path/to/documents -o all_processed_output.pdf
-```
-
-With force OCR and specific language:
-```bash
-ocrmyproject all --force-ocr --language fra -i /path/to/documents -o all_processed_output.pdf
-```
-
-### Command Options
-
-#### OCR Command:
-- `-i, --input`: Input directory containing files to process
-- `-o, --output`: Output directory for results (default: ocr_results)
-- `--force-ocr`: Force OCR on all pages (better results, slower processing)
-- `-l, --language`: OCR language (default: fra for French)
-- `--help`: Show help information
-
-#### Merge Command:
-- `-i, --input`: Input directory containing PDFs to merge
-- `-o, --output`: Output PDF file path (default: merged_output.pdf)
-- `--help`: Show help information
-
-#### All Command:
-- `-i, --input`: Input directory containing documents to process
-- `-o, --output`: Output PDF file path (default: all_processed_output.pdf)
-- `--force-ocr`: Force OCR on all pages (better results, slower processing)
-- `-l, --language`: OCR language (default: fra for French)
-- `--help`: Show help information
-
-### Default Behavior
-
-- OCR command: Creates `ocr_results` directory if no output specified
-- Merge command: Creates `<input_dir_name>_merged.pdf` if no output specified
-- All command: Creates `all_processed_output.pdf` if no output specified
-
-## Examples
-
-Process images with OCR in French (default):
-```bash
-ocrmyproject ocr -i ./scanned_images -o ./ocr_results
-```
-
-Process with improved OCR quality in English:
-```bash
-ocrmyproject ocr --force-ocr --language eng -i ./important_docs -o ./processed_docs
-```
-
-Merge processed PDFs with table of contents:
-```bash
-ocrmyproject merge -i ./ocr_results -o ./final_merged_document.pdf
-```
-
-Complete process in one command with German OCR:
-```bash
-ocrmyproject all --force-ocr --language deu -i ./mixed_documents -o ./complete_document.pdf
-```
-
-## Requirements
-
-- Python 3.7+
-- System dependencies for ocrmypdf (Tesseract, QPDF, etc.)
-
-## Dependencies
-
-Install required Python packages:
-```bash
-pip install -r requirements.txt
-```
-
-## Package Structure
-
-```
-ocrmyproject/
-├── ocrmyproject/
-│   ├── __init__.py
-│   ├── api.py          # Core OCR processing functionality
-│   ├── cli.py          # Command-line interface
-│   ├── utils/          # Utility modules
-│   └── ...             # Other modules
-├── tests/
-│   ├── __init__.py
-│   ├── conftest.py
-│   └── test_ocrmyproject.py
-├── setup.py
-├── requirements.txt
-├── README.md
-└── ...
-```
+This will open a window allowing you to:
+- Select input and output directories.
+- Choose OCR languages.
+- Run the "Convert + OCR" and "Merge" processes.
+- See live logs and progress.
 
 ## Development
 
 ### Running Tests
 
-```bash
-# Run all tests
-python -m pytest tests/
-
-# Run tests with verbose output
-python -m pytest tests/ -v
-
-# Run tests with coverage
-python -m pytest tests/ --cov=ocrmyproject
-```
-
-### Install in Development Mode
+To ensure everything is working correctly, run the automated tests:
 
 ```bash
-pip install -e .
+pytest
 ```
 
-### Build Distribution
+### Building Executables
+
+This project uses PyInstaller to create standalone executables. Build scripts are provided in the `scripts/` directory.
 
 ```bash
-pip install build
-python -m build
+# Build the CLI executable
+./scripts/build_cli.sh
+
+# Build the GUI executable
+./scripts/build_gui.sh
 ```
 
-## Graphical User Interface
-
-To launch the GUI application:
-
-```bash
-python -m ocrmyproject.gui
-```
-
-The GUI provides a simple interface with:
-- Input and output directory selection
-- Operation type (OCR, merge, or complete processing)
-- Language selection
-- Force OCR option
-- Progress tracking
-
-## Architecture
-
-The system handles:
-- ZIP archives (automatically extracts and processes)
-- Multi-level directory structures (preserves hierarchy in TOC)
-- Resume functionality (continues from where it left off)
-- Progress tracking (using JSON state files)
-- File type filtering (processes only supported formats)
-- Multi-language OCR support
-
-## Troubleshooting
-
-- Ensure ocrmypdf dependencies are installed (Tesseract, QPDF, etc.)
-- Check that input directories exist and have read permissions
-- Verify sufficient disk space for temporary and output files
-- For OCR issues, try the `--force-ocr` option to ensure all pages are processed
-- Language-specific issues may require installing additional Tesseract language packs
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Add tests for new functionality
-5. Run tests (`python -m pytest tests/`)
-6. Commit your changes (`git commit -m 'Add amazing feature'`)
-7. Push to the branch (`git push origin feature/amazing-feature`)
-8. Open a Pull Request
+The executables will be located in the `dist/` directory.

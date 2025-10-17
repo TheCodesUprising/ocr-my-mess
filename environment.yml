@@ -1,16 +1,19 @@
-name: ocrmyproject
+name: ocr-my-mess
 channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.9
-  - tesseract
-  - ghostscript
-#  - tesseract-data
-  - poppler
-  - qpdf
+  - python>=3.9
   - pip
+  - ocrmypdf
+  - pillow
+  - tqdm
+  - rich
+  - typer
+  - pyinstaller
+  - pytest
+  - pymupdf
+  # libreoffice is not a standard conda package, it should be installed separately
   - pip:
-    - ocrmypdf>=13.0.0
-    - PyMuPDF>=1.20.0
-    - Pillow>=8.0.0
+    - typer[all]
+    - ttkbootstrap>=1.10.1
