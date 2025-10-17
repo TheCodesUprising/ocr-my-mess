@@ -5,21 +5,20 @@ This module provides a CLI powered by Typer with two main commands:
 - `convert`: To process a directory of documents, converting and running OCR.
 - `merge`: To combine all resulting PDFs into a single file with bookmarks.
 """
-
 import logging
 import shutil
 import sys
 from pathlib import Path
-from typing_extensions import Annotated
 
 import typer
 from rich.console import Console
+from typing_extensions import Annotated
 
 # Add project root to sys.path for absolute imports
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
-from pdf_pipeline import convert as convert_module, merge as merge_module, utils
+from pdf_pipeline import convert as convert_module, merge as merge_module, utils  # noqa: E402
 
 app = typer.Typer(
     name="ocr-my-mess-cli",

@@ -88,8 +88,6 @@ def test_run_ocr_success(mock_ocrmypdf_ocr, temp_paths: Path):
         output_type='pdf',
         skip_big=10,
         tesseract_timeout=25,
-        jbig2=False,
-        jpeg_quality=75,
         optimize=0,
         progress_bar=False,
     )
@@ -113,8 +111,6 @@ def test_run_ocr_skip_text(mock_ocrmypdf_ocr, temp_paths: Path):
         output_type='pdf',
         skip_big=10,
         tesseract_timeout=25,
-        jbig2=False,
-        jpeg_quality=75,
         optimize=0,
         progress_bar=False,
     )

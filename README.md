@@ -14,7 +14,7 @@ A complete and modular Python pipeline to convert, OCR, and merge all your docum
 
 ### Using Conda (Recommended)
 
-This is the easiest way to get started, as it handles all dependencies, including Python itself.
+This is the easiest way to get started, as it handles all dependencies, last version of tessaract and Python itself.
 
 ```bash
 # 1. Create the conda environment

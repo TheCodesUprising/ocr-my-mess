@@ -9,7 +9,6 @@ This module provides a simple GUI built with Tkinter. It allows users to:
 
 The core processing logic is run in a separate thread to keep the GUI responsive.
 """
-
 import logging
 import queue
 import shutil
@@ -20,6 +19,7 @@ import tkinter as tk
 import webbrowser
 from pathlib import Path
 from tkinter import filedialog, messagebox, scrolledtext
+from typing import Optional
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import (BOTH, DANGER, FLAT, LEFT, SECONDARY, SUCCESS, X)
@@ -28,7 +28,7 @@ from ttkbootstrap.constants import (BOTH, DANGER, FLAT, LEFT, SECONDARY, SUCCESS
 project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
-from pdf_pipeline import convert as convert_module, merge as merge_module, utils
+from pdf_pipeline import convert as convert_module, merge as merge_module, utils  # noqa: E402
 
 
 class QueueHandler(logging.Handler):
