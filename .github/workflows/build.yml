@@ -141,10 +141,10 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            dist/ocr-my-mess-windows-x64/ocr-my-mess.exe
-            dist/ocr-my-mess-macos-x64/ocr-my-mess
-            dist/ocr-my-mess-macos-arm/ocr-my-mess
-            dist/ocr-my-mess-linux-x64/ocr-my-mess
+            dist/ocr-my-mess-windows-x64/ocr-my-mess.exe:ocr-my-mess-windows-x64.exe
+            dist/ocr-my-mess-macos-x64/ocr-my-mess:ocr-my-mess-macos-x64
+            dist/ocr-my-mess-macos-arm/ocr-my-mess:ocr-my-mess-macos-arm
+            dist/ocr-my-mess-linux-x64/ocr-my-mess:ocr-my-mess-linux-x64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
