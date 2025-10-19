@@ -5,15 +5,17 @@ channels:
 dependencies:
   - python>=3.9
   - pip
-  - ocrmypdf
   - pillow
   - tqdm
   - rich
   - typer
   - pyinstaller
+  - setuptools<81
   - pytest
-  - pymupdf
+  - tesseract
   # libreoffice is not a standard conda package, it should be installed separately
   - pip:
+    - pypdf
+    - ocrmypdf
     - typer[all]
     - ttkbootstrap>=1.10.1

@@ -1,12 +1,17 @@
 """Unit tests for the convert.py module."""
 
+# Standard library imports
+import sys
 import tempfile
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
+# Third-party imports
 import pytest
 from PIL import Image
 
+# Local application/library specific imports
+from pdf_pipeline.utils import check_command_exists
 from pdf_pipeline.convert import (
     convert_image_to_pdf,
     convert_office_to_pdf,
@@ -76,6 +81,8 @@ def test_run_ocr_success(mock_ocrmypdf_ocr, temp_paths: Path):
     output_pdf = temp_paths / "output.pdf"
     input_pdf.touch()
 
+    expected_clean_value = sys.platform != "win32" and check_command_exists("unpaper")
+
     run_ocr(input_pdf, output_pdf, "eng", force_ocr=True, skip_text=False)
 
     mock_ocrmypdf_ocr.assert_called_once_with(
@@ -84,7 +91,7 @@ def test_run_ocr_success(mock_ocrmypdf_ocr, temp_paths: Path):
         language="eng",
         force_ocr=True,
         skip_text=False,
-        clean=True,
+        clean=expected_clean_value,
         output_type='pdf',
         skip_big=10,
         tesseract_timeout=25,
@@ -99,6 +106,8 @@ def test_run_ocr_skip_text(mock_ocrmypdf_ocr, temp_paths: Path):
     output_pdf = temp_paths / "output.pdf"
     input_pdf.touch()
 
+    expected_clean_value = sys.platform != "win32" and check_command_exists("unpaper")
+
     run_ocr(input_pdf, output_pdf, "fra", force_ocr=False, skip_text=True)
 
     mock_ocrmypdf_ocr.assert_called_once_with(
@@ -107,7 +116,7 @@ def test_run_ocr_skip_text(mock_ocrmypdf_ocr, temp_paths: Path):
         language="fra",
         force_ocr=False,
         skip_text=True,
-        clean=True,
+        clean=expected_clean_value,
         output_type='pdf',
         skip_big=10,
         tesseract_timeout=25,

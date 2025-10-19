@@ -38,6 +38,8 @@ app = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
 )
 
+console = Console()
+
 @app.callback()
 def main_callback(
     version: Optional[bool] = typer.Option(
@@ -88,6 +90,7 @@ def run(
     force_ocr: Annotated[
         bool,
         typer.Option("--force-ocr", help="Force OCR even if text is already present."),
+    ] = False,
     verbose: Annotated[
         int,
         typer.Option(
@@ -221,6 +224,14 @@ def convert(
             help="Increase verbosity level (-v for INFO, -vv for DEBUG, -vvv for detailed DEBUG).",
         ),
     ] = 0,
+    convert_office: Annotated[
+        bool,
+        typer.Option(
+            "--convert-office",
+            "--no-convert-office",
+            help="Enable/disable office document conversion.",
+        ),
+    ] = True,
     optimize: Annotated[
         int,
         typer.Option(
@@ -244,6 +255,7 @@ def convert(
         log.info(f"  Language: {lang}")
         log.info(f"  Force OCR: {force_ocr}")
         log.info(f"  Optimize: {optimize}")
+        log.debug(f"convert_office: {convert_office}")
 
     force_ocr_param = force_ocr
     skip_text_param = not force_ocr

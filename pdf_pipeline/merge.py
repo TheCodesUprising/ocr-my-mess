@@ -1,7 +1,7 @@
 """
-Module for merging multiple PDFs into a single file with hierarchical bookmarks using PyMuPDF.
+Module for merging multiple PDFs into a single file with hierarchical bookmarks using pypdf.
 
-This module uses PyMuPDF (fitz) to:
+This module uses pypdf to:
 1. Recursively scan a directory for PDF files.
 2. Append all found PDFs into a single master PDF.
 3. Build and set a hierarchical table of contents (bookmarks) that mirrors the
@@ -10,66 +10,71 @@ This module uses PyMuPDF (fitz) to:
 
 import logging
 from pathlib import Path
-from typing import List
+from typing import Optional
 
-import fitz  # PyMuPDF
+from pypdf import PdfWriter, PdfReader
 from rich.progress import Progress
 
 log = logging.getLogger(__name__)
 
 
 def _build_toc_and_merge(
-    main_doc: fitz.Document,
+    writer: PdfWriter,
     folder_path: Path,
     toc_depth: int,
     current_depth: int,
-) -> List:
+    parent_bookmark: Optional[str] = None,
+) -> None:
     """
-    Recursively builds a TOC list for PyMuPDF and merges PDFs into the main document.
+    Recursively builds a TOC (bookmarks) for pypdf and merges PDFs into the writer.
 
     Args:
-        main_doc: The main fitz.Document object to merge into.
+        writer: The PdfWriter object to merge into and add bookmarks to.
         folder_path: The current folder to process.
         toc_depth: Maximum depth for the TOC.
         current_depth: The current recursion depth.
-
-    Returns:
-        A list of TOC entries for the current level, in PyMuPDF format.
+        parent_bookmark: The parent bookmark for the current level.
     """
-    toc_entries = []
     if current_depth > toc_depth:
-        return toc_entries
+        return
 
     # Sort entries to ensure consistent order
     entries = sorted(list(folder_path.iterdir()), key=lambda p: p.name)
 
     for entry in entries:
         if entry.is_dir():
-            # Recurse into subdirectory
-            sub_toc = _build_toc_and_merge(
-                main_doc, entry, toc_depth, current_depth + 1
-            )
-            if sub_toc:
-                # For a folder, the bookmark should point to the first page of its content.
-                first_page_of_content = sub_toc[0][2]
-                toc_entries.append([current_depth, entry.name, first_page_of_content])
-                toc_entries.extend(sub_toc)
+            # For a folder, add a bookmark for the folder itself
+            if current_depth <= toc_depth:
+                # Get the current page number before merging content of the folder
+                # This will be the page where the folder's content starts
+                folder_page_num = len(writer.pages)
+                folder_bookmark = writer.add_outline_item(
+                    entry.name, folder_page_num, parent=parent_bookmark
+                )
+                _build_toc_and_merge(
+                    writer, entry, toc_depth, current_depth + 1, folder_bookmark
+                )
+            else:
+                # If current_depth > toc_depth, still merge content but don't add bookmark
+                _build_toc_and_merge(
+                    writer, entry, toc_depth, current_depth + 1, parent_bookmark
+                )
 
         elif entry.is_file() and entry.suffix.lower() == ".pdf":
             try:
-                page_count_before = main_doc.page_count
-                # TOC entry format: [level, title, page_number (1-based)]
-                toc_entries.append([current_depth, entry.stem, page_count_before + 1])
-
-                with fitz.open(entry) as src_doc:
-                    main_doc.insert_pdf(src_doc)
+                reader = PdfReader(entry)
+                # Add bookmark for the PDF file
+                if current_depth <= toc_depth:
+                    file_page_num = len(writer.pages) # 0-indexed
+                    writer.add_outline_item(
+                        entry.stem, file_page_num, parent=parent_bookmark
+                    )
+                writer.append(reader)
                 log.debug(f"Appended {entry.name} to the final PDF.")
             except Exception as e:
                 log.warning(
                     f"Could not process PDF {entry.name}. It may be corrupt or incompatible. Error: {e}"
                 )
-
-    return toc_entries
 
 
 def merge_pdfs(
@@ -78,7 +83,7 @@ def merge_pdfs(
     toc_depth: int = 3,
 ) -> None:
     """
-    Merges all PDFs in a directory into a single file with a hierarchical TOC using PyMuPDF.
+    Merges all PDFs in a directory into a single file with a hierarchical TOC using pypdf.
 
     Args:
         input_dir: The directory containing the processed PDFs.
@@ -92,24 +97,19 @@ def merge_pdfs(
 
     log.info(f"Merging {len(pdf_files)} PDF files into {output_file.name}...")
 
-    with fitz.open() as main_doc:
+    with PdfWriter() as writer:
         with Progress() as progress:
             task = progress.add_task("[magenta]Merging PDFs...", total=1)
 
-            toc = _build_toc_and_merge(
-                main_doc, folder_path=input_dir, toc_depth=toc_depth, current_depth=1
+            _build_toc_and_merge(
+                writer, folder_path=input_dir, toc_depth=toc_depth, current_depth=1
             )
-
-            if toc:
-                log.debug("Setting table of contents.")
-                main_doc.set_toc(toc)
 
             progress.update(task, advance=1)
 
-        if main_doc.page_count > 0:
+        if len(writer.pages) > 0:
             log.info(f"Saving final PDF to {output_file}...")
-            # Use garbage collection to reduce file size
-            main_doc.save(output_file, garbage=4, deflate=True)
+            writer.write(output_file)
             log.info("Merge complete.")
         else:
             log.warning("No pages were added. Output file not created.")

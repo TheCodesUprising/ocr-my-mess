@@ -10,6 +10,7 @@ Contains helpers for:
 
 import logging
 import shutil
+import subprocess
 import threading
 from pathlib import Path
 from typing import Generator, List, Set
@@ -145,3 +146,40 @@ def count_pages(files: Set[Path]) -> int:
         )
 
     return total_pages
+
+
+def get_tesseract_languages() -> List[str]:
+    """Get the list of installed Tesseract languages by running `tesseract --list-langs`."""
+    try:
+        # The command `tesseract --list-langs` output can vary.
+        # It might be on stdout or stderr, and may or may not have a header.
+        result = subprocess.run(
+            ['tesseract', '--list-langs'], 
+            capture_output=True, 
+            text=True, 
+            check=True, 
+            encoding='utf-8'
+        )
+        output = result.stdout + "\n" + result.stderr
+        lines = output.splitlines()
+
+        # Find the start of the language list
+        for i, line in enumerate(lines):
+            if 'Available languages' in line or 'List of available languages' in line:
+                # The languages start on the next line
+                return sorted([lang.strip() for lang in lines[i+1:] if lang.strip()])
+        
+        # Fallback for simpler output format (just a list of languages with no header)
+        # This is often the case on Windows.
+        if lines:
+            # Filter out potential empty lines or informational messages
+            langs = [lang.strip() for lang in lines if len(lang.strip()) == 3]
+            if langs:
+                return sorted(langs)
+
+        log.warning("Could not parse Tesseract languages from output.")
+        return []
+
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        log.warning("Could not run tesseract to get languages. Please ensure Tesseract is installed and in your PATH.")
+        return []

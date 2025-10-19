@@ -2,6 +2,10 @@
 
 A complete and modular Python pipeline to convert, OCR, and merge all your documents into a single, searchable PDF.
 
+## Pre-built Binaries (Simplest Method)
+
+For the quickest start, pre-built executables for Windows, macOS, and Linux are available for download from the [GitHub Releases page](https://github.com/TheCodesUprising/ocr-my-mess/releases). These executables are standalone and do not require Python or any other dependencies to be installed on your system. Simply download the appropriate version for your operating system, extract it, and run.
+
 ## Features
 
 - **Recursive Conversion**: Traverses a directory to find all supported files (images, office documents, archives, existing PDFs).
@@ -12,36 +16,65 @@ A complete and modular Python pipeline to convert, OCR, and merge all your docum
 
 ## Installation
 
-### Using Conda (Recommended)
+There are two main ways to install `ocr-my-mess`: from Conda or from PyPI.
 
-This is the easiest way to get started, as it handles all dependencies, last version of tessaract and Python itself.
+### From Conda (Recommended)
 
+This is the easiest and most reliable way to get started. The Conda environment, defined in the `config/conda/environment.yml` file, includes all Python dependencies as well as external binaries like Tesseract, Unpaper, and jbig2dec. This ensures you have the latest compiled versions, which are often more recent and performant than the ones provided by your operating system's package manager.
+
+1.  **Create and activate the Conda environment:**
+    ```bash
+    conda env create -f environment.yml
+    conda activate ocr-my-mess
+    ```
+2.  **Run the application:**
+    Once the environment is activated, you can run the application directly.
+    ```bash
+    ocr-my-mess
+    ```
+
+**For development:** If you want to modify the source code, you can install the project in editable mode after activating the environment:
 ```bash
-# 1. Create the conda environment
-conda env create -f environment.yml
-
-# 2. Activate the environment
-conda activate ocr-my-mess
-
-# 3. Install the project in editable mode
 pip install -e .
 ```
 
-### Using Pip
+**Note on LibreOffice**: The Conda environment does not include LibreOffice. If you need to convert office documents, you must install it separately on your system (see the PyPI installation section for instructions).
 
-```bash
-# 1. Create and activate a virtual environment
-python -m venv .venv
-source .venv/bin/activate
+### From PyPI
 
-# 2. Install dependencies
-pip install -r requirements.txt
+This method requires you to install system dependencies manually before installing the Python package.
 
-# 3. Install the project in editable mode
-pip install -e .
-```
+1.  **Install System Dependencies**
 
-**Note**: For office document conversion, you must have `LibreOffice` installed and available in your system's PATH.
+    This project relies on several external programs. Please install them using your system's package manager.
+
+    **Linux (Debian/Ubuntu):**
+    ```bash
+    sudo apt-get update
+    sudo apt-get install -y tesseract-ocr unpaper jbig2dec libreoffice
+    ```
+
+    **macOS:**
+    ```bash
+    brew install tesseract unpaper jbig2dec
+    brew install --cask libreoffice
+    ```
+
+    **Windows:**
+    Installation on Windows is more complex. We recommend using the [official `ocrmypdf` Docker image](https://ocrmypdf.readthedocs.io/en/latest/docker.html) if possible. Otherwise, you will need to install the following dependencies manually:
+    - Tesseract OCR: `choco install tesseract`
+    - LibreOffice: `choco install libreoffice`
+    - Unpaper and jbig2dec: These are not readily available on Chocolatey. Please refer to the `ocrmypdf` documentation for installation instructions.
+
+    **Optional Dependencies:**
+    - `jbig2enc`: For better PDF compression. See the [ocrmypdf documentation](https://ocrmypdf.readthedocs.io/en/latest/jbig2.html) for installation.
+
+2.  **Install `ocr-my-mess` from PyPI**
+
+    ```bash
+    pip install ocr-my-mess
+    ```
+
 
 ## Usage
 

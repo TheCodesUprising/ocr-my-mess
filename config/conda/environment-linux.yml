@@ -1,0 +1,17 @@
+name: ocr-my-mess
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - setuptools<81
+  - pytest
+  - ghostscript
+  - unpaper
+  - tesseract
+  # libreoffice is not a standard conda package, it should be installed separately
+  - pip:
+    - pypdf
+    - ocrmypdf
+    - typer[all]
+    - ttkbootstrap>=1.10.1

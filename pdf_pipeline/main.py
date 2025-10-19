@@ -7,6 +7,9 @@ the Graphical User Interface (GUI) or the Command-Line Interface (CLI).
 
 import sys
 
+from pdf_pipeline import cli
+from pdf_pipeline import gui
+
 
 def main():
     """
@@ -14,11 +17,9 @@ def main():
     """
     if len(sys.argv) > 1:
         # If there are arguments, run the CLI
-        from . import cli
         cli.main()
     else:
         # If there are no arguments, run the GUI
-        from . import gui
         gui.main()
 
 

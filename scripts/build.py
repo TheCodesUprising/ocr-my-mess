@@ -21,6 +21,8 @@ def build():
         "--name", "ocr-my-mess",
         "--add-data", f"{ocrmypdf_data_path}:ocrmypdf/data",
         "--hidden-import=PIL._tkinter_finder",
+        "--hidden-import=ocrmypdf",
+        "--collect-all=ocrmypdf",
         str(project_root / "pdf_pipeline" / "main.py"),
     ]
 

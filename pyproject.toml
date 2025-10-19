@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ocr-my-mess"
-version = "0.1.2"
+version = "0.3.11"
 description = "A PDF pipeline to convert, OCR, and merge documents."
 readme = "README.md"
 requires-python = ">=3.7"
@@ -16,8 +16,9 @@ classifiers = [
 dependencies = [
     "rich>=13.0.0",
     "typer[all]>=0.9.0",
-    "PyMuPDF>=1.23.0",
+    "pypdf>=3.0.0",
     "ttkbootstrap>=1.10.1",
+    "ocrmypdf",
 ]
 
 [project.urls]
@@ -27,5 +28,10 @@ dependencies = [
 [project.scripts]
 ocr-my-mess = "pdf_pipeline.main:main"
 
+[project.optional-dependencies]
+dev = ["pymupdf", "ruff", "pytest", "pyinstaller", "twine"]
+
 [tool.setuptools]
-packages = ["pdf_pipeline"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pdf_pipeline*"]
