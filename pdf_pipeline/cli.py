@@ -110,6 +110,13 @@ def run(
             help="PDF optimization level (0=none, 1=safe, 2=all, 3=unsafe)." ,
         ),
     ] = 0,
+    reuse_cache: Annotated[
+        Optional[bool],
+        typer.Option(
+            "--reuse-cache / --no-reuse-cache",
+            help="Reuse existing cache directory or clear it."
+        )
+    ] = None,
 ):
     """Run the full pipeline: convert, OCR, and merge all documents."""
     log_levels = ["WARNING", "INFO", "DEBUG", "DEBUG"]
@@ -131,10 +138,11 @@ def run(
 
     cache_dir = Path(".ocr-my-mess-cache")
     if cache_dir.exists():
-        reuse_cache = typer.confirm(
-            f"Found existing cache directory '{cache_dir}'. Do you want to reuse it to resume processing?",
-            default=True
-        )
+        if reuse_cache is None: # If option not provided, prompt user
+            reuse_cache = typer.confirm(
+                f"Found existing cache directory '{cache_dir}'. Do you want to reuse it to resume processing?",
+                default=True
+            )
         if not reuse_cache:
             console.print(f"Clearing existing cache at {cache_dir}...")
             shutil.rmtree(cache_dir)

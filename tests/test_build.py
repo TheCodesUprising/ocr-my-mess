@@ -95,3 +95,32 @@ def test_packaged_gui_for_tesseract_error(built_executable):
         except subprocess.TimeoutExpired:
             process.kill()
             pass
+
+@pytest.mark.pyinstaller_build
+@pytest.mark.skipif(sys.platform == "win32", reason="Build script is for Linux/macOS")
+def test_cli_process_dummy_pdf(built_executable):
+    """
+    Tests that the CLI 'process' command runs without crashing on a dummy PDF.
+    This is a basic integration test to catch packaging errors.
+    """
+    dummy_pdf_path = PROJECT_ROOT / "tests" / "dummy.pdf"
+    with tempfile.TemporaryDirectory() as tmpdir:
+        output_pdf_path = Path(tmpdir) / "output.pdf"
+        
+        run_process = subprocess.run(
+            [
+                str(built_executable), 
+                "process", 
+                "--input-file", str(dummy_pdf_path),
+                "--output-file", str(output_pdf_path)
+            ], 
+            capture_output=True, 
+            text=True, 
+            check=False
+        )
+        
+        # We don't expect this to succeed because the input PDF is invalid.
+        # However, it should not fail with a PackageNotFoundError.
+        assert "importlib.metadata.PackageNotFoundError: ocrmypdf" not in run_process.stderr
+        # It should fail with an error related to the invalid PDF.
+        assert "error" in run_process.stderr.lower()

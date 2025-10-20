@@ -9,7 +9,6 @@ def def_get_ocrmypdf_data_path():
 def build():
     """Builds the ocr-my-mess executable."""
     project_root = Path(__file__).parent.parent
-    hooks_dir = project_root / "hooks"
 
     print("Building ocr-my-mess...")
 
@@ -30,7 +29,6 @@ def build():
     print("----------------------")
 
     ocrmypdf_data_path = def_get_ocrmypdf_data_path()
-
     command = [
         sys.executable,
         "-m", "PyInstaller",
@@ -38,7 +36,9 @@ def build():
         "--name", "ocr-my-mess",
         "--add-data", f"{ocrmypdf_data_path}:ocrmypdf/data",
         "--hidden-import=PIL._tkinter_finder",
-        "--additional-hooks-dir", str(hooks_dir),
+        "--collect-submodules", "ocrmypdf",
+        "--collect-data", "ocrmypdf",
+
     ]
 
     if sys.platform == "linux":
