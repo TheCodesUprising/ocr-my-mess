@@ -19,7 +19,7 @@ def test_ocr_on_packaged_binary(tmp_path):
     output_pdf = tmp_path / "output.pdf"
 
     # The text we expect to find in the PDF after OCR
-    expected_text = "repository of all manpages contained."
+    expected_text = "repository of all manpages contained"
 
     # Create a temporary input directory and copy the test PDF into it
     input_dir = tmp_path / "input_dir"

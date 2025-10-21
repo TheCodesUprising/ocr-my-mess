@@ -37,8 +37,10 @@ def build():
         "--add-data", f"{ocrmypdf_data_path}:ocrmypdf/data",
         "--hidden-import=PIL._tkinter_finder",
         "--collect-submodules", "ocrmypdf",
-        "--collect-data", "ocrmypdf",
-
+        "--hidden-import",
+        "pdf_pipeline.utils",
+        "--hidden-import",
+        "ocrmypdf",
     ]
 
     if sys.platform == "linux":
