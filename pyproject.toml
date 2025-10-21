@@ -29,7 +29,7 @@ dependencies = [
 ocr-my-mess = "pdf_pipeline.main:main"
 
 [project.optional-dependencies]
-dev = ["pymupdf", "ruff", "pytest", "pyinstaller", "twine"]
+dev = ["pymupdf", "ruff", "pytest", "pyinstaller", "twine", "pypdf"]
 
 [tool.setuptools]
 [tool.setuptools.packages.find]

@@ -46,4 +46,4 @@ def test_ocr_on_packaged_binary(tmp_path):
     page = reader.pages[0]
     text = page.extract_text()
 
-    assert expected_text.lower() not in text.lower(), f"Expected text not found in the output PDF. Found: \n{text}"
+    assert expected_text.lower() in text.lower(), f"Expected text not found in the output PDF. Found: \n{text}"

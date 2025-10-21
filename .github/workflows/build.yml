@@ -71,12 +71,12 @@ jobs:
         run: chmod +x dist/ocr-my-mess
 
       - name: Install test dependencies
-        run: pip install pytest pypdf
+        run: pip install ".[dev]"
 
       - name: Run end-to-end test
         run: |
           export OCR_MY_MESS_EXECUTABLE=$(pwd)/dist/ocr-my-mess
-          pytest -m end_to_end
+          pytest tests/test_end_to_end.py
 
   build-cross-platform:
     if: startsWith(github.ref, 'refs/tags/')
