@@ -23,7 +23,7 @@ fi
 echo "Ruff check passed."
 
 echo "Running pytest before commit..."
-pytest --ignore=tests/test_build.py --ignore=tests/test_pypi_package.py
+pytest --ignore=tests/test_build.py --ignore=tests/test_pypi_package.py --ignore=tests/test_end_to_end.py
 
 if [ $? -ne 0 ]; then
   echo "Pytest failed. Please fix the errors before committing." >&2

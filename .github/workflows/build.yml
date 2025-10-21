@@ -44,7 +44,7 @@ jobs:
       - name: Run pytest
         shell: bash -l {0}
         run: |
-          pytest --ignore=tests/test_build.py
+          pytest --ignore=tests/test_build.py --ignore=test_end_to_end.py
       - name: Build executable
         shell: bash -l {0}
         run: python scripts/build.py
@@ -135,7 +135,7 @@ jobs:
       - name: Run pytest
         shell: bash -l {0}
         run: |
-          pytest --ignore=tests/test_pypi_package.py -m "not pyinstaller_build"
+          pytest --ignore=tests/test_build.py --ignore=test_end_to_end.py
 
       - name: Build executable
         shell: bash -l {0}
@@ -171,7 +171,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: dist
-      
+
       - name: Display structure of downloaded files
         run: ls -R dist
 

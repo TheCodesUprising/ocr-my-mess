@@ -9,7 +9,7 @@ EXECUTABLE_PATH = os.environ.get("OCR_MY_MESS_EXECUTABLE")
 
 @pytest.mark.end_to_end
 @pytest.mark.skipif(not EXECUTABLE_PATH, reason="OCR_MY_MESS_EXECUTABLE env var not set")
-@pytest.mark.skipif(not Path(EXECUTABLE_PATH).exists(), reason=f"Executable not found at path: {EXECUTABLE_PATH}")
+@pytest.mark.skipif(EXECUTABLE_PATH and not Path(EXECUTABLE_PATH).exists(), reason=f"Executable not found at path: {EXECUTABLE_PATH}")
 def test_ocr_on_packaged_binary(tmp_path):
     """
     A full end-to-end test that runs the packaged binary on a sample PDF
