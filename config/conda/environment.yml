@@ -13,6 +13,7 @@ dependencies:
   - setuptools<81
   - pytest
   - tesseract
+  - ghostscript=10.05.1
   # libreoffice is not a standard conda package, it should be installed separately
   - pip:
     - pypdf
