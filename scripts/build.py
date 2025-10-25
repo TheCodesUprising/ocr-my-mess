@@ -4,6 +4,7 @@ from pathlib import Path
 import site
 import glob
 import os
+import shutil
 
 def def_get_ocrmypdf_data_path():
     import ocrmypdf.data
@@ -50,7 +51,15 @@ def build():
         "pdf_pipeline.utils",
         "--hidden-import",
         "ocrmypdf",
+        "--runtime-hook", "scripts/pyi_rth_tesseract.py",
     ]
+
+    tesseract_path = shutil.which("tesseract")
+    if tesseract_path:
+        print(f"--- Bundling Tesseract executable from: {tesseract_path} ---")
+        command.extend(["--add-binary", f"{tesseract_path}:."])
+    else:
+        print("Warning: Tesseract executable not found in PATH. OCR functionality may fail.")
 
     ocrmypdf_dist_info = get_ocrmypdf_dist_info_path()
     if ocrmypdf_dist_info:
