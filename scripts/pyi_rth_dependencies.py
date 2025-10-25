@@ -10,3 +10,6 @@ if getattr(sys, 'frozen', False):
     application_path = Path(sys._MEIPASS)
     tesseract_path = application_path
     os.environ['PATH'] = str(tesseract_path) + os.pathsep + os.environ['PATH']
+    tessdata_path = application_path / 'tessdata'
+    if tessdata_path.exists():
+        os.environ['TESSDATA_PREFIX'] = str(tessdata_path)
