@@ -32,12 +32,13 @@ def test_ocr_on_packaged_binary(tmp_path):
         "--input", str(input_dir), # Changed from "--input-file"
         "--output", str(output_pdf), # Changed from "--output-file"
         "--force-ocr",
-        "--no-reuse-cache" # Added this line
+        "--no-reuse-cache", # Added this line
+        "-vvv" # Added verbose flag
     ]
 
     result = subprocess.run(command, capture_output=True, text=True, check=False)
 
-    assert result.returncode == 0, f"OCR process failed with exit code {result.returncode}:\n{result.stderr}"
+    assert result.returncode == 0, f"OCR process failed with exit code {result.returncode}:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
     assert output_pdf.exists(), "Output PDF was not created."
 
     # Verify the content of the output PDF
@@ -46,4 +47,4 @@ def test_ocr_on_packaged_binary(tmp_path):
     page = reader.pages[0]
     text = page.extract_text()
 
-    assert expected_text.lower() in text.lower(), f"Expected text not found in the output PDF. Found: \n{text}"
+    assert expected_text.lower() in text.lower(), f"Expected text not found in the output PDF. Found: \n{text}\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
