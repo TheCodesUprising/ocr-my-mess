@@ -1,10 +1,20 @@
 import subprocess
 import sys
 from pathlib import Path
+import site
+import glob
+import os
 
 def def_get_ocrmypdf_data_path():
     import ocrmypdf.data
     return ocrmypdf.data.__path__[0]
+
+def get_ocrmypdf_dist_info_path():
+    for site_package_dir in site.getsitepackages():
+        dist_info_paths = glob.glob(os.path.join(site_package_dir, "ocrmypdf-*.dist-info"))
+        if dist_info_paths:
+            return dist_info_paths[0]
+    return None
 
 def build():
     """Builds the ocr-my-mess executable."""
@@ -16,7 +26,6 @@ def build():
     subprocess.run(["tesseract", "--version"], check=True)
     subprocess.run(["tesseract", "--list-langs"], check=True)
 
-    import os
     conda_prefix = os.environ.get("CONDA_PREFIX")
     tessdata_path = None
     if conda_prefix:
@@ -42,6 +51,10 @@ def build():
         "--hidden-import",
         "ocrmypdf",
     ]
+
+    ocrmypdf_dist_info = get_ocrmypdf_dist_info_path()
+    if ocrmypdf_dist_info:
+        command.extend(["--add-data", f"{ocrmypdf_dist_info}:{Path(ocrmypdf_dist_info).name}"])
 
     if sys.platform == "linux":
         command.extend(["--exclude-module", "libstdc++.so.6"])
