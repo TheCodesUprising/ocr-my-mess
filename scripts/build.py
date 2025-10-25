@@ -51,7 +51,7 @@ def build():
         "pdf_pipeline.utils",
         "--hidden-import",
         "ocrmypdf",
-        "--runtime-hook", "scripts/pyi_rth_tesseract.py",
+        "--runtime-hook", "scripts/pyi_rth_dependencies.py",
     ]
 
     tesseract_path = shutil.which("tesseract")
@@ -60,6 +60,13 @@ def build():
         command.extend(["--add-binary", f"{tesseract_path}:."])
     else:
         print("Warning: Tesseract executable not found in PATH. OCR functionality may fail.")
+
+    ghostscript_path = shutil.which("gs")
+    if ghostscript_path:
+        print(f"--- Bundling Ghostscript executable from: {ghostscript_path} ---")
+        command.extend(["--add-binary", f"{ghostscript_path}:."])
+    else:
+        print("Warning: Ghostscript executable not found in PATH. PDF processing may fail.")
 
     ocrmypdf_dist_info = get_ocrmypdf_dist_info_path()
     if ocrmypdf_dist_info:
