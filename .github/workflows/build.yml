@@ -71,7 +71,7 @@ jobs:
         run: chmod +x dist/ocr-my-mess
 
       - name: Install test dependencies
-        run: pip install ".[dev]"
+        run: pip install pytest pypdf
 
       - name: Run end-to-end test
         run: |
