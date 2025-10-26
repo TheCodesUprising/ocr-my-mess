@@ -46,7 +46,6 @@ jobs:
         shell: bash -l {0}
         run: |
           echo "Check Ghostscript and Tesseract"
-#          gs --version
           tesseract --version
           pdftoppm -v
           ls -al /tmp
