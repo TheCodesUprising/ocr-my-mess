@@ -48,8 +48,11 @@ jobs:
           echo "Check Ghostscript and Tesseract"
           tesseract --version
           ls -al /tmp
+          which tessaract
           ldd $(which tesseract)
           conda list | grep ghostscript
+          /home/runner/miniconda3/envs/ocr-my-mess/bin/gs --version
+          /home/runner/miniconda3/envs/ocr-my-mess/bin/gs -h
 
 
 
