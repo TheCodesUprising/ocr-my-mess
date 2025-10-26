@@ -43,9 +43,10 @@ jobs:
           ruff check .
 
       - name: Check environment and check GS
+        shell: bash -l {0}
         run: |
           echo "Check Ghostscript and Tesseract"
-          gs --version
+#          gs --version
           tesseract --version
           pdftoppm -v
           ls -al /tmp
