@@ -41,6 +41,17 @@ jobs:
         run: |
           ruff check .
 
+      - name: Check environment and check GS
+        run: |
+          echo "Check Ghostscript and Tesseract"
+          gs --version
+          tesseract --version
+          pdftoppm -v
+          ls -al /tmp
+          ldd $(which tesseract)
+          ldd $(which gs)
+          gs -dDEBUG -sDEVICE=png16m -dFirstPage=1 -dLastPage=1 -r300 -o dist/output.png tests/ocr_test_input.pdf
+
       - name: Run pytest
         shell: bash -l {0}
         run: |
@@ -54,6 +65,13 @@ jobs:
         with:
           name: ocr-my-mess-linux-x64
           path: dist/ocr-my-mess
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ghostscript-output
+          path: dist/output.png
+
 
   test-packaged-linux:
     runs-on: ubuntu-22.04
