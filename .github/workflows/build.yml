@@ -52,8 +52,7 @@ jobs:
           conda list | grep ghostscript
           /home/runner/miniconda3/envs/ocr-my-mess/bin/gs --version
           /home/runner/miniconda3/envs/ocr-my-mess/bin/gs -h
-
-
+          /home/runner/miniconda3/envs/ocr-my-mess/bin/gs -dQUIET -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -sOutputFile=dist/output.png tests/ocr_test_input.pdf
 
       - name: Run pytest
         shell: bash -l {0}
@@ -75,7 +74,15 @@ jobs:
           name: ghostscript-output
           path: dist/output.png
 
-
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: pt_BR.UTF-8
+      run: |
+          sudo locale-gen pt_BR.UTF-8
+          sudo update-locale LANG=pt_BR.UTF-8
+    - name: date
   test-packaged-linux:
     runs-on: ubuntu-22.04
     needs: lint-test-build-linux
