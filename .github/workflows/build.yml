@@ -47,11 +47,11 @@ jobs:
         run: |
           echo "Check Ghostscript and Tesseract"
           tesseract --version
-          pdftoppm -v
           ls -al /tmp
           ldd $(which tesseract)
-          ldd $(which gs)
-          gs -dDEBUG -sDEVICE=png16m -dFirstPage=1 -dLastPage=1 -r300 -o dist/output.png tests/ocr_test_input.pdf
+          conda list | grep ghostscript
+
+
 
       - name: Run pytest
         shell: bash -l {0}
