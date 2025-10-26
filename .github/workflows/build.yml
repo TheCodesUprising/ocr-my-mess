@@ -56,7 +56,7 @@ jobs:
           path: dist/ocr-my-mess
 
   test-packaged-linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: lint-test-build-linux
     steps:
       - uses: actions/checkout@v3

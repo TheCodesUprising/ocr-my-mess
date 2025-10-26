@@ -68,12 +68,6 @@ def build():
     else:
         print("Warning: Ghostscript executable not found in PATH. PDF processing may fail.")
 
-    unpaper_path = shutil.which("unpaper")
-    if unpaper_path:
-        print(f"--- Bundling unpaper executable from: {unpaper_path} ---")
-        command.extend(["--add-binary", f"{unpaper_path}:."])
-    else:
-        print("Warning: unpaper executable not found in PATH. The 'clean' option will be disabled.")
 
     ocrmypdf_dist_info = get_ocrmypdf_dist_info_path()
     if ocrmypdf_dist_info:

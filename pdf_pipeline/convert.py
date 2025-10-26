@@ -31,7 +31,6 @@ from .utils import (
     check_command_exists,
 )
 
-import sys
 
 log = logging.getLogger(__name__)
 
@@ -101,9 +100,9 @@ def run_ocr(
 
             log.debug(f"Running ocrmypdf with options: {{'input_file': '{input_file}', 'output_file': '{output_file}', 'language': '{lang}', 'force_ocr': {force_ocr}, 'skip_text': {skip_text}, 'optimize': {optimize}}})")
 
-            use_clean = sys.platform != "win32" and check_command_exists("unpaper")
-            if not use_clean:
-                log.warning("Skipping 'clean' option for ocrmypdf: unpaper not found or running on Windows.")
+            # use_clean = sys.platform != "win32" and check_command_exists("unpaper")
+            # if not use_clean:
+            #     log.warning("Skipping 'clean' option for ocrmypdf: unpaper not found or running on Windows.")
 
             ocr_options = {
                 "input_file": input_file,
@@ -111,7 +110,7 @@ def run_ocr(
                 "language": lang,
                 "force_ocr": force_ocr,
                 "skip_text": skip_text,
-                "clean": use_clean,
+                # "clean": use_clean,
                 "output_type": "pdf",
                 "skip_big": 10,
                 "tesseract_timeout": 25,

@@ -20,7 +20,7 @@ There are two main ways to install `ocr-my-mess`: from Conda or from PyPI.
 
 ### From Conda (Recommended)
 
-This is the easiest and most reliable way to get started. The Conda environment, defined in the `config/conda/environment.yml` file, includes all Python dependencies as well as external binaries like Tesseract, Unpaper, and jbig2dec. This ensures you have the latest compiled versions, which are often more recent and performant than the ones provided by your operating system's package manager.
+This is the easiest and most reliable way to get started. The Conda environment, defined in the `config/conda/environment.yml` file, includes all Python dependencies as well as external binaries like Tesseract, and jbig2dec. This ensures you have the latest compiled versions, which are often more recent and performant than the ones provided by your operating system's package manager.
 
 1.  **Create and activate the Conda environment:**
     ```bash
@@ -51,12 +51,12 @@ This method requires you to install system dependencies manually before installi
     **Linux (Debian/Ubuntu):**
     ```bash
     sudo apt-get update
-    sudo apt-get install -y tesseract-ocr unpaper jbig2dec libreoffice
+    sudo apt-get install -y tesseract-ocr jbig2dec libreoffice
     ```
 
     **macOS:**
     ```bash
-    brew install tesseract unpaper jbig2dec
+    brew install tesseract jbig2dec
     brew install --cask libreoffice
     ```
 
@@ -64,7 +64,7 @@ This method requires you to install system dependencies manually before installi
     Installation on Windows is more complex. We recommend using the [official `ocrmypdf` Docker image](https://ocrmypdf.readthedocs.io/en/latest/docker.html) if possible. Otherwise, you will need to install the following dependencies manually:
     - Tesseract OCR: `choco install tesseract`
     - LibreOffice: `choco install libreoffice`
-    - Unpaper and jbig2dec: These are not readily available on Chocolatey. Please refer to the `ocrmypdf` documentation for installation instructions.
+    - jbig2dec: These are not readily available on Chocolatey. Please refer to the `ocrmypdf` documentation for installation instructions.
 
     **Optional Dependencies:**
     - `jbig2enc`: For better PDF compression. See the [ocrmypdf documentation](https://ocrmypdf.readthedocs.io/en/latest/jbig2.html) for installation.
