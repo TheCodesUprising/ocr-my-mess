@@ -60,6 +60,7 @@ This method requires you to install system dependencies manually before installi
     sudo apt-get install -y tesseract-ocr jbig2dec libreoffice python3-pip
     # Accept to install those packages during system startup
     torsocks pip install ocr-my-mess --break-system-packages
+    # Be sure you have '/home/amnesia/.local/bin' on your $PATH
     ```
 
     **macOS:**
