@@ -54,6 +54,14 @@ This method requires you to install system dependencies manually before installi
     sudo apt-get install -y tesseract-ocr jbig2dec libreoffice
     ```
 
+    **Tails:**
+    ```bash
+    sudo apt-get update
+    sudo apt-get install -y tesseract-ocr jbig2dec libreoffice python3-pip
+    # Accept to install those packages during system startup
+    torsocks pip install ocr-my-mess --break-system-packages
+    ```
+
     **macOS:**
     ```bash
     brew install tesseract jbig2dec
@@ -74,7 +82,6 @@ This method requires you to install system dependencies manually before installi
     ```bash
     pip install ocr-my-mess
     ```
-
 
 ## Usage
 
