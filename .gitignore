@@ -67,3 +67,5 @@ outdir/
 # LLM shit
 .qwen/
 SUMMARY.md
+LLM_context
+

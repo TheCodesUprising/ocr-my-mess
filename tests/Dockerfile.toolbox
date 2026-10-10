@@ -1,0 +1,43 @@
+# Test image reproducing the Fedora Atomic / secureblue Toolbx environment
+# created by scripts/install_atomic.sh, plus the extra tools required to
+# exercise the Tk/ttkbootstrap GUI headlessly (Xvfb, xdotool, ImageMagick).
+#
+# Build it via tests/run_toolbox_gui_test.sh, or manually (root context):
+#   podman build -f tests/Dockerfile.toolbox -t ocr-my-mess-toolbox-test .
+ARG TOOLBOX_IMAGE=registry.fedoraproject.org/fedora-toolbox:44
+FROM ${TOOLBOX_IMAGE}
+
+USER root
+
+# System dependencies from scripts/install_atomic.sh + headless GUI tooling.
+RUN dnf install -y \
+        tesseract \
+        tesseract-langpack-fra \
+        tesseract-langpack-eng \
+        jbig2dec \
+        libreoffice \
+        python3-pip \
+        python3-tkinter \
+        xorg-x11-server-Xvfb \
+        xdotool \
+        ImageMagick \
+        dejavu-sans-fonts \
+    && dnf clean all
+
+WORKDIR /app
+
+# Install the project exactly like install_atomic.sh does (`pip install .`).
+COPY pyproject.toml README.md ./
+COPY pdf_pipeline ./pdf_pipeline
+RUN pip install --no-cache-dir . || pip install --no-cache-dir --break-system-packages .
+# Test runner used by the image CMD.
+RUN pip install --no-cache-dir pytest
+
+# Minimal test material.
+COPY pytest.ini ./
+COPY tests/test_toolbox_gui.py ./tests/test_toolbox_gui.py
+
+# Tell the GUI smoke test that it is allowed to run.
+ENV OCR_MY_MESS_TOOLBOX_TEST=1
+
+CMD ["pytest", "-vv", "-m", "toolbox_gui", "tests/test_toolbox_gui.py"]

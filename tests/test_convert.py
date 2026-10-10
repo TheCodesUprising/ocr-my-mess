@@ -92,6 +92,7 @@ def test_run_ocr_success(mock_ocrmypdf_ocr, temp_paths: Path):
         tesseract_timeout=25,
         optimize=0,
         progress_bar=False,
+        invalidate_digital_signatures=True,
     )
 
 @patch("pdf_pipeline.convert.ocrmypdf.ocr")
@@ -114,4 +115,5 @@ def test_run_ocr_skip_text(mock_ocrmypdf_ocr, temp_paths: Path):
         tesseract_timeout=25,
         optimize=0,
         progress_bar=False,
+        invalidate_digital_signatures=True,
     )

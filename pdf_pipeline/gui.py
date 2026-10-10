@@ -24,7 +24,13 @@ from importlib import metadata
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import (BOTH, DANGER, FLAT, LEFT, RIGHT, SECONDARY, SUCCESS, X, NORMAL, DISABLED, INVERSE)
-from ttkbootstrap.tooltip import ToolTip
+try:
+    from ttkbootstrap.tooltip import ToolTip
+except ImportError:
+    # Fallback if tooltip is not available in the installed version of ttkbootstrap
+    class ToolTip:
+        def __init__(self, widget, text=None, *args, **kwargs):
+            pass
 
 # Add project root to sys.path for absolute imports when bundled by PyInstaller
 project_root = Path(__file__).resolve().parent.parent
@@ -165,15 +171,20 @@ class App(ttk.Window):
 
     def create_widgets(self):
         """Create and layout all the widgets in the main window."""
-        main_frame = ttk.Frame(self, padding="15")
-        main_frame.pack(fill=BOTH, expand=True)
+        main_frame = ttk.Frame(self)
+        main_frame.pack(fill=BOTH, expand=True, padx=15, pady=15)
+
 
         notebook = ttk.Notebook(main_frame)
         notebook.pack(fill=BOTH, expand=True, pady=5)
 
-        pipeline_tab = ttk.Frame(notebook, padding="10")
-        ocr_tab = ttk.Frame(notebook, padding="10")
-        merge_tab = ttk.Frame(notebook, padding="10")
+        pipeline_tab = ttk.Frame(notebook)
+        ocr_tab = ttk.Frame(notebook)
+        merge_tab = ttk.Frame(notebook)
+        
+        # Add padding manually using pack or internal frames if needed
+        # Here we will just remove the padding argument that causes TclError
+
 
         notebook.add(pipeline_tab, text="Pipeline Complet")
         notebook.add(ocr_tab, text="OCR Seulement")
@@ -183,8 +194,9 @@ class App(ttk.Window):
         self.create_ocr_tab(ocr_tab)
         self.create_merge_tab(merge_tab)
 
-        progress_frame = ttk.LabelFrame(main_frame, text="Progression", padding="10")
-        progress_frame.pack(fill=X, pady=10)
+        progress_frame = ttk.LabelFrame(main_frame, text="Progression")
+        progress_frame.pack(fill=X, pady=10, padx=10)
+
 
         self.progress_var = tk.DoubleVar()
         self.progress_bar = ttk.Progressbar(
@@ -195,8 +207,8 @@ class App(ttk.Window):
         self.progress_label = ttk.Label(progress_frame, text="En attente...")
         self.progress_label.pack(fill=X, expand=True)
 
-        log_frame = ttk.LabelFrame(main_frame, text="Logs", padding="10")
-        log_frame.pack(fill=BOTH, expand=True, pady=5)
+        log_frame = ttk.LabelFrame(main_frame, text="Logs")
+        log_frame.pack(fill=BOTH, expand=True, pady=5, padx=10)
 
         self.log_text = scrolledtext.ScrolledText(log_frame, state="disabled", height=10, relief=FLAT)
         self.log_text.pack(fill=BOTH, expand=True)
@@ -209,8 +221,8 @@ class App(ttk.Window):
         """Create the widgets for the 'Full Pipeline' tab."""
         ttk.Label(parent_frame, text="Exécute le pipeline complet : OCR sur les fichiers d'un dossier source, puis fusionne les résultats dans un seul PDF.", wraplength=700).pack(fill=X, pady=(0, 10))
         
-        files_frame = ttk.LabelFrame(parent_frame, text="Fichiers", padding="10")
-        files_frame.pack(fill=X, pady=5)
+        files_frame = ttk.LabelFrame(parent_frame, text="Fichiers")
+        files_frame.pack(fill=X, pady=5, padx=10)
 
         source_frame = ttk.Frame(files_frame)
         source_frame.pack(fill=X, expand=True, pady=(0, 5))
@@ -224,8 +236,8 @@ class App(ttk.Window):
         ttk.Entry(dest_frame, textvariable=self.dest_file).pack(side=LEFT, fill=X, expand=True, padx=5)
         ttk.Button(dest_frame, text="Parcourir...", command=self.browse_destination_file).pack(side=LEFT)
 
-        options_frame = ttk.LabelFrame(parent_frame, text="Options", padding="10")
-        options_frame.pack(fill=X, pady=10)
+        options_frame = ttk.LabelFrame(parent_frame, text="Options")
+        options_frame.pack(fill=X, pady=10, padx=10)
 
         self.pipeline_lang_selector = LanguageSelector(options_frame, self.all_languages, self.european_languages)
         self.pipeline_lang_selector.pack(fill=X, expand=True, pady=5)
@@ -251,8 +263,8 @@ class App(ttk.Window):
         force_ocr_check.pack(side=RIGHT, padx=10)
         ToolTip(force_ocr_check, text="Ré-applique l'OCR sur les pages ayant déjà du texte. Utile si un document mélange des images et du texte existant.", bootstyle=(SUCCESS, INVERSE))
 
-        action_frame = ttk.LabelFrame(parent_frame, text="Actions", padding="10")
-        action_frame.pack(fill=X, pady=10)
+        action_frame = ttk.LabelFrame(parent_frame, text="Actions")
+        action_frame.pack(fill=X, pady=10, padx=10)
 
         self.run_button = ttk.Button(
             action_frame, text="Lancer le Pipeline Complet", command=self.start_full_pipeline, bootstyle=SUCCESS
@@ -268,8 +280,8 @@ class App(ttk.Window):
         """Create the widgets for the 'OCR Only' tab."""
         ttk.Label(parent_frame, text="Applique l'OCR sur tous les fichiers d'un dossier source et enregistre les PDFs résultants dans un dossier de destination.", wraplength=700).pack(fill=X, pady=(0, 10))
 
-        files_frame = ttk.LabelFrame(parent_frame, text="Fichiers", padding="10")
-        files_frame.pack(fill=X, pady=5)
+        files_frame = ttk.LabelFrame(parent_frame, text="Fichiers")
+        files_frame.pack(fill=X, pady=5, padx=10)
 
         source_frame = ttk.Frame(files_frame)
         source_frame.pack(fill=X, expand=True, pady=(0, 5))
@@ -283,8 +295,8 @@ class App(ttk.Window):
         ttk.Entry(dest_frame, textvariable=self.ocr_dest_dir).pack(side=LEFT, fill=X, expand=True, padx=5)
         ttk.Button(dest_frame, text="Parcourir...", command=lambda: self.browse_directory(self.ocr_dest_dir)).pack(side=LEFT)
 
-        options_frame = ttk.LabelFrame(parent_frame, text="Options", padding="10")
-        options_frame.pack(fill=X, pady=10)
+        options_frame = ttk.LabelFrame(parent_frame, text="Options")
+        options_frame.pack(fill=X, pady=10, padx=10)
 
         self.ocr_lang_selector = LanguageSelector(options_frame, self.all_languages, self.european_languages)
         self.ocr_lang_selector.pack(fill=X, expand=True, pady=5)
@@ -310,8 +322,8 @@ class App(ttk.Window):
         force_ocr_check.pack(side=RIGHT, padx=10)
         ToolTip(force_ocr_check, text="Ré-applique l'OCR sur les pages ayant déjà du texte. Utile si un document mélange des images et du texte existant.", bootstyle=(SUCCESS, INVERSE))
 
-        action_frame = ttk.LabelFrame(parent_frame, text="Actions", padding="10")
-        action_frame.pack(fill=X, pady=10)
+        action_frame = ttk.LabelFrame(parent_frame, text="Actions")
+        action_frame.pack(fill=X, pady=10, padx=10)
 
         self.run_ocr_button = ttk.Button(
             action_frame, text="Lancer l'OCR", command=self.start_ocr_only, bootstyle=SUCCESS
@@ -322,8 +334,8 @@ class App(ttk.Window):
         """Create the widgets for the 'Merge Files' tab."""
         ttk.Label(parent_frame, text="Fusionne tous les fichiers PDF d'un dossier source en un seul fichier PDF de destination.", wraplength=700).pack(fill=X, pady=(0, 10))
 
-        files_frame = ttk.LabelFrame(parent_frame, text="Fichiers", padding="10")
-        files_frame.pack(fill=X, pady=5)
+        files_frame = ttk.LabelFrame(parent_frame, text="Fichiers")
+        files_frame.pack(fill=X, pady=5, padx=10)
 
         source_frame = ttk.Frame(files_frame)
         source_frame.pack(fill=X, expand=True, pady=(0, 5))
@@ -337,8 +349,8 @@ class App(ttk.Window):
         ttk.Entry(dest_frame, textvariable=self.merge_dest_file).pack(side=LEFT, fill=X, expand=True, padx=5)
         ttk.Button(dest_frame, text="Parcourir...", command=lambda: self.browse_save_as(self.merge_dest_file)).pack(side=LEFT)
 
-        action_frame = ttk.LabelFrame(parent_frame, text="Actions", padding="10")
-        action_frame.pack(fill=X, pady=10)
+        action_frame = ttk.LabelFrame(parent_frame, text="Actions")
+        action_frame.pack(fill=X, pady=10, padx=10)
 
         self.run_merge_button = ttk.Button(
             action_frame, text="Lancer la Fusion", command=self.start_merge_only, bootstyle=SUCCESS

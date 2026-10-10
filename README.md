@@ -44,15 +44,19 @@ pip install -e .
 
 This method requires you to install system dependencies manually before installing the Python package.
 
-1.  **Install System Dependencies**
+**For Fedora Atomic (Silverblue, Kinoite, secureblue):**
+The recommended way is to use **Toolbx**. Run the following command from the project root:
+```bash
+./scripts/install_atomic.sh
+```
+This creates an isolated container with all required system dependencies (`tesseract`, `libreoffice`, etc.) and installs the application inside it. See [Fedora Atomic & secureblue (Toolbx)](#fedora-atomic--secureblue-toolbx) for details, including the GUI caveat on secureblue.
 
-    This project relies on several external programs. Please install them using your system's package manager.
+**For other Linux (Debian/Ubuntu):**
+```bash
+sudo apt-get update
+sudo apt-get install -y tesseract-ocr jbig2dec libreoffice
+```
 
-    **Linux (Debian/Ubuntu):**
-    ```bash
-    sudo apt-get update
-    sudo apt-get install -y tesseract-ocr jbig2dec libreoffice
-    ```
 
     **Tails:**
     ```bash
@@ -83,6 +87,48 @@ This method requires you to install system dependencies manually before installi
     ```bash
     pip install ocr-my-mess
     ```
+
+
+## Fedora Atomic & secureblue (Toolbx)
+
+On Atomic desktops — including [secureblue](https://secureblue.dev), a hardened
+Silverblue/Kinoite — the root filesystem is read-only, so `ocr-my-mess` runs
+inside a [Toolbx](https://containertoolbx.org/) container.
+
+**Install** (the script uses the local source if run from a clone, otherwise it
+pulls `ocr-my-mess` from PyPI):
+
+```bash
+curl -fsSLO https://raw.githubusercontent.com/TheCodesUprising/ocr-my-mess/no-masters/scripts/install_atomic.sh
+chmod +x install_atomic.sh && ./install_atomic.sh
+```
+
+This creates a container named `ocr-my-mess`. Run anything in it with
+`toolbox run -c ocr-my-mess <command>`:
+
+```bash
+toolbox run -c ocr-my-mess ocr-my-mess          # GUI
+toolbox run -c ocr-my-mess ocr-my-mess run --input ~/Documents --output ~/Documents/scan.pdf
+```
+
+> **GUI on secureblue:** Tkinter requires X11 and secureblue disables Xwayland
+> by default, so the window never appears. Enable it once and reboot with
+> `ujust set-xwayland on`.
+
+**Manage it:**
+
+```bash
+toolbox run -c ocr-my-mess pip install --upgrade ocr-my-mess   # update
+toolbox rm -f ocr-my-mess                                       # remove
+```
+
+**Automated GUI test** (reproduces this environment in Podman, no secureblue
+host needed):
+
+```bash
+./tests/run_toolbox_gui_test.sh
+```
+
 
 ## Usage
 
@@ -135,6 +181,19 @@ To ensure everything is working correctly, run the automated tests:
 ```bash
 pytest
 ```
+
+### Testing the Toolbx GUI
+
+Builds a `fedora-toolbox` container and checks that the GUI really renders
+(window mapped, theme drawn). Works on any Linux host with podman or docker:
+
+```bash
+./tests/run_toolbox_gui_test.sh
+```
+
+Use `OCR_MY_MESS_USE_HOST_DISPLAY=1` to reuse your own display instead of the
+container's private Xvfb. The tests live in `tests/test_toolbox_gui.py` (marker
+`toolbox_gui`) and are opt-in via `OCR_MY_MESS_TOOLBOX_TEST=1`.
 
 ### Building Executables
 

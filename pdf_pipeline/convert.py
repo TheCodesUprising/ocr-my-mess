@@ -116,6 +116,7 @@ def run_ocr(
                 "tesseract_timeout": 25,
                 "optimize": optimize,
                 "progress_bar": False,
+                "invalidate_digital_signatures": True
             }
 
             if optimize > 0:
