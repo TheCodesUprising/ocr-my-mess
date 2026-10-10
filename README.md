@@ -16,42 +16,13 @@ For the quickest start, pre-built executables for Windows, macOS, and Linux are 
 
 ## Installation
 
-There are two main ways to install `ocr-my-mess`: from Conda or from PyPI.
-
-### From Conda (Recommended)
-
-This is the easiest and most reliable way to get started. The Conda environment, defined in the `config/conda/environment.yml` file, includes all Python dependencies as well as external binaries like Tesseract, and jbig2dec. This ensures you have the latest compiled versions, which are often more recent and performant than the ones provided by your operating system's package manager.
-
-1.  **Create and activate the Conda environment:**
-    ```bash
-    conda env create -f environment.yml
-    conda activate ocr-my-mess
-    ```
-2.  **Run the application:**
-    Once the environment is activated, you can run the application directly.
-    ```bash
-    ocr-my-mess
-    ```
-
-**For development:** If you want to modify the source code, you can install the project in editable mode after activating the environment:
-```bash
-pip install -e .
-```
-
-**Note on LibreOffice**: The Conda environment does not include LibreOffice. If you need to convert office documents, you must install it separately on your system (see the PyPI installation section for instructions).
+The simplest way to get started is the [pre-built binaries](#pre-built-binaries-simplest-method). Otherwise, see [From PyPI](#from-pypi) below.
 
 ### From PyPI
 
 This method requires you to install system dependencies manually before installing the Python package.
 
-**For Fedora Atomic (Silverblue, Kinoite, secureblue):**
-The recommended way is to use **Toolbx**. Run the following command from the project root:
-```bash
-./scripts/install_atomic.sh
-```
-This creates an isolated container with all required system dependencies (`tesseract`, `libreoffice`, etc.) and installs the application inside it. See [Fedora Atomic & secureblue (Toolbx)](#fedora-atomic--secureblue-toolbx) for details, including the GUI caveat on secureblue.
-
-**For other Linux (Debian/Ubuntu):**
+**Linux (Debian/Ubuntu):**
 ```bash
 sudo apt-get update
 sudo apt-get install -y tesseract-ocr jbig2dec libreoffice
@@ -173,6 +144,16 @@ This will open a window allowing you to:
 - See live logs and progress.
 
 ## Development
+
+The build and CI environment is defined with Conda. It bundles the Python dependencies and the external binaries (Tesseract, jbig2dec, Ghostscript) used to produce the standalone executables:
+
+```bash
+conda env create -f config/conda/environment.yml
+conda activate ocr-my-mess
+pip install -e .
+```
+
+**Note:** LibreOffice is not part of the Conda environment; install it separately if you need office document conversion.
 
 ### Running Tests
 
