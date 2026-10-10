@@ -12,59 +12,59 @@ set -euo pipefail
 
 CONTAINER_NAME="${OCR_MY_MESS_CONTAINER:-ocr-my-mess}"
 
-echo "🚀 Installation de ocr-my-mess pour Fedora Atomic via Toolbx"
+echo "Installing ocr-my-mess on Fedora Atomic with Toolbx (container: $CONTAINER_NAME)"
 
-# 1. Vérifier que toolbox est disponible
+# 1. Check that toolbox is available.
 if ! command -v toolbox >/dev/null 2>&1; then
-    echo "❌ Erreur : toolbox n'est pas installé." >&2
-    echo "   Il est fourni par défaut sur Fedora Atomic (Silverblue, Kinoite, secureblue)." >&2
+    echo "Error: toolbox is not installed." >&2
+    echo "It ships by default on Fedora Atomic (Silverblue, Kinoite, secureblue)." >&2
     exit 1
 fi
 
-# 2. Créer le conteneur s'il n'existe pas déjà
+# 2. Create the container if it does not exist yet.
 if toolbox list | grep -qw "$CONTAINER_NAME"; then
-    echo "ℹ️  Le conteneur '$CONTAINER_NAME' existe déjà."
+    echo "Container '$CONTAINER_NAME' already exists."
 else
-    echo "📦 Création du conteneur Toolbx '$CONTAINER_NAME'..."
+    echo "Creating Toolbx container '$CONTAINER_NAME'..."
     toolbox create -c "$CONTAINER_NAME"
 fi
 
-# 3. Choisir la source à installer : checkout local, sinon PyPI.
+# 3. Pick the source to install: local checkout first, PyPI otherwise.
 if [ -f pyproject.toml ]; then
-    echo "📁 Dépôt source détecté : installation locale du projet (pip install .)."
+    echo "Source checkout detected: installing the local project (pip install .)."
     PY_INSTALL="pip install ."
 else
-    echo "📦 Aucun dépôt source détecté : installation depuis PyPI (pip install ocr-my-mess)."
+    echo "No source checkout detected: installing from PyPI (pip install ocr-my-mess)."
     PY_INSTALL="pip install --upgrade ocr-my-mess"
 fi
 
-# 4. Installer les dépendances système et le package dans le conteneur
-echo "🔧 Configuration de l'environnement à l'intérieur du conteneur..."
+# 4. Install the system dependencies and the package inside the container.
+echo "Configuring the environment inside the container..."
 toolbox run -c "$CONTAINER_NAME" bash -lc "
 set -e
-echo '🛠️  Installation des dépendances système...'
+echo 'Installing system dependencies...'
 sudo dnf install -y tesseract tesseract-langpack-fra tesseract-langpack-eng jbig2dec libreoffice python3-pip python3-tkinter
 
-echo '🐍 Installation du package Python...'
+echo 'Installing the Python package...'
 $PY_INSTALL
 
-echo '✅ Installation terminée !'
+echo 'Installation complete.'
 "
 
-# 5. Afficher les instructions d'utilisation
+# 5. Print usage instructions.
 cat <<EOF
 ---------------------------------------------------------------------------
-🎉 Installation réussie !
+Installation complete.
 
-Lancer l'interface en ligne de commande (CLI) :
+Run the command-line interface (CLI):
   toolbox run -c $CONTAINER_NAME ocr-my-mess --help
 
-Lancer l'interface graphique (GUI) :
+Run the graphical interface (GUI):
   toolbox run -c $CONTAINER_NAME ocr-my-mess
-  (sur secureblue, activez d'abord Xwayland puis redémarrez :
+  (on secureblue, enable Xwayland first and reboot:
      ujust set-xwayland on)
 
-Entrer dans le conteneur :
+Enter the container:
   toolbox enter -c $CONTAINER_NAME
 ---------------------------------------------------------------------------
 EOF
